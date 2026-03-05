@@ -1,1 +1,0 @@
-# kwendi_app
