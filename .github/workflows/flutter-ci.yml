@@ -1,4 +1,4 @@
-name: Flutter Build
+name: Flutter CI/CD
 
 on:
   push:
@@ -11,12 +11,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-    - uses: subosito/flutter-action@v2
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.19.0'
+        flutter-version: '3.24.0'
+        channel: 'stable'
 
-    - run: flutter pub get
+    - name: Enable Flutter desktop support
+      run: flutter config --enable-linux-desktop
 
-    - run: flutter build web --release
+    - name: Install dependencies
+      run: flutter pub get
+
+    - name: Analyze code
+      run: flutter analyze
+
+    - name: Run tests
+      run: flutter test
+
+    - name: Build APK
+      run: flutter build apk --release --no-tree-shake-icons
+
+    - name: Build Web
+      run: flutter build web --release --no-tree-shake-icons
+
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: apk-release
+        path: build/app/outputs/flutter-apk/app-release.apk
+
+    - name: Upload Web build
+      uses: actions/upload-artifact@v4
+      with:
+        name: web-build
+        path: build/web/
+
+    - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/main'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: build/web
