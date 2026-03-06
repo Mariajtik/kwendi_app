@@ -6,15 +6,14 @@ void main() {
 }
 
 class KwendiApp extends StatelessWidget {
+  const KwendiApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Kwendi',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: 'Poppins',
-        primaryColor: Color(0xFFE53935),
-      ),
+      theme: ThemeData(fontFamily: 'Poppins', primaryColor: Color(0xFFE53935)),
       home: SplashScreen(),
     );
   }
